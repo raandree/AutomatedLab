@@ -18,12 +18,12 @@ Set-LabInstallationCredential -Username Install -Password Somepass1
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DnsServer1'= '192.168.71.10'
-    'Add-LabMachineDefinition:DnsServer2'= '192.168.71.11'
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2012 R2 Datacenter (Server with a GUI)'
-    'Add-LabMachineDefinition:DomainName'= 'child1.test2.net'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.71.10'
+    'Add-LabMachineDefinition:DnsServer2'      = '192.168.71.11'
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2012 R2 Datacenter (Server with a GUI)'
+    'Add-LabMachineDefinition:DomainName'      = 'child1.test2.net'
 }
 
 #the first machine is the root domain controller, DDL and DFL is defined manually
@@ -40,7 +40,7 @@ $postInstallActivity = Get-LabPostInstallationActivity -ScriptFileName 'New-ADLa
 Add-LabMachineDefinition -Name T2DC2 -Memory 512MB -IpAddress 192.168.71.11 -Roles $role
 
 #This will be the SQL server with the usual demo databases
-$role = Get-LabMachineRoleDefinition -Role SQLServer2014 -Properties @{InstallSampleDatabase = 'true'}
+$role = Get-LabMachineRoleDefinition -Role SQLServer2014 -Properties @{InstallSampleDatabase = 'true' }
 Add-LabMachineDefinition -Name T2Sql1 -Memory 1GB -Processors 2 -IpAddress 192.168.71.51 -Roles $role
 
 #Client with Visual Studio 2015

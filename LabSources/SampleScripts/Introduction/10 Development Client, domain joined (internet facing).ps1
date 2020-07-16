@@ -11,10 +11,10 @@ Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ Swit
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
-    'Add-LabMachineDefinition:Memory' = 1GB
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
+    'Add-LabMachineDefinition:Memory'          = 1GB
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Network' = 'Lab1'
+    'Add-LabMachineDefinition:Network'         = 'Lab1'
 }
 
 $netAdapter = @()
@@ -23,7 +23,7 @@ $netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -
 Add-LabMachineDefinition -Name DC1 -Roles RootDC -NetworkAdapter $netAdapter
 
 $roles = @(
-    Get-LabMachineRoleDefinition -Role SQLServer2014 -Properties @{InstallSampleDatabase = 'true'}
+    Get-LabMachineRoleDefinition -Role SQLServer2014 -Properties @{InstallSampleDatabase = 'true' }
     Get-LabMachineRoleDefinition -Role Routing
 )
 Add-LabMachineDefinition -Name SQL1 -Roles $roles

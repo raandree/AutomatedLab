@@ -4,7 +4,7 @@ $PSDefaultParameterValues = @{
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
     'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
     'Add-LabMachineDefinition:Memory'          = 2GB
-    'Add-LabMachineDefinition:Tools'          = "$labsources\Tools"
+    'Add-LabMachineDefinition:Tools'           = "$labsources\Tools"
 }
 
 Add-LabDomainDefinition -Name contoso.com -AdminUser Install -AdminPassword Somepass1
@@ -20,8 +20,8 @@ Add-LabMachineDefinition -Name tfs2SQL1 -ROles SQLServer2016
 # If no properties are used, we automatically select a SQL server, use port 8080 and name the initial
 # Collection AutomatedLab
 $role = Get-LabMachineRoleDefinition -Role Tfs2017 -Properties @{
-    Port = '8081'
-    DbServer = "tfs1SQL1"
+    Port              = '8081'
+    DbServer          = "tfs1SQL1"
     InitialCollection = 'CustomCollection'
 }
 Add-LabMachineDefinition -Name tfs2Srv1 -Roles $role -Memory 4GB

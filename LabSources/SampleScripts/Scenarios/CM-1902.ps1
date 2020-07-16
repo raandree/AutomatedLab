@@ -150,15 +150,17 @@ Param (
     [String]$LabName = "CMLab01",
 
     [Parameter()]
-    [ValidateScript({
-        if (-not ([System.IO.Directory]::Exists($_))) { 
-            throw "Invalid path or access denied" 
-        } 
-        elseif (-not ($_ | Test-Path -PathType Container)) { 
-            throw "Value must be a directory, not a file" 
-        }
-        return $true
-    })]
+    [ValidateScript( {
+            if (-not ([System.IO.Directory]::Exists($_)))
+            { 
+                throw "Invalid path or access denied" 
+            } 
+            elseif (-not ($_ | Test-Path -PathType Container))
+            { 
+                throw "Value must be a directory, not a file" 
+            }
+            return $true
+        })]
     [String]$VMPath,
 
     [Parameter()]
@@ -191,7 +193,7 @@ Param (
     [String]$SiteName = $LabName,
 
     [Parameter()]
-    [ValidateSet("1902","1906","1910")]
+    [ValidateSet("1902", "1906", "1910")]
     [String]$CMVersion = "1910",
 
     [Parameter()]
@@ -212,16 +214,25 @@ Param (
     [String]$DCHostname = "DC01",
 
     [Parameter()]
-    [ValidateScript({
-        if ($_ -lt 0) { throw "Invalid number of CPUs" }; return $true
-    })]
+    [ValidateScript( {
+            if ($_ -lt 0)
+            {
+                throw "Invalid number of CPUs" 
+            }; return $true
+        })]
     [Int]$DCCPU = 2,
 
     [Parameter()]
-    [ValidateScript({
-        if ($_ -lt [Double]128MB -or $_ -gt [Double]128GB) { throw "Memory for VM must be more than 128MB and less than 128GB" }; $true
-        if ($_ -lt [Double]1GB) { throw "Please specify more than 1GB of memory" }
-    })]
+    [ValidateScript( {
+            if ($_ -lt [Double]128MB -or $_ -gt [Double]128GB)
+            {
+                throw "Memory for VM must be more than 128MB and less than 128GB" 
+            }; $true
+            if ($_ -lt [Double]1GB)
+            {
+                throw "Please specify more than 1GB of memory" 
+            }
+        })]
     [Double]$DCMemory = 2GB,
 
     [Parameter()]
@@ -229,29 +240,40 @@ Param (
     [String]$CMHostname = "CM01",
 
     [Parameter()]
-    [ValidateScript({
-        if ($_ -lt 0) { throw "Invalid number of CPUs" }; return $true
-    })]
+    [ValidateScript( {
+            if ($_ -lt 0)
+            {
+                throw "Invalid number of CPUs" 
+            }; return $true
+        })]
     [Int]$CMCPU = 4,
 
     [Parameter()]
-    [ValidateScript({
-        if ($_ -lt [Double]128MB -or $_ -gt [Double]128GB) { throw "Memory for VM must be more than 128MB and less than 128GB" }
-        if ($_ -lt [Double]1GB) { throw "Please specify more than 1GB of memory" }
-        return $true
-    })]
+    [ValidateScript( {
+            if ($_ -lt [Double]128MB -or $_ -gt [Double]128GB)
+            {
+                throw "Memory for VM must be more than 128MB and less than 128GB" 
+            }
+            if ($_ -lt [Double]1GB)
+            {
+                throw "Please specify more than 1GB of memory" 
+            }
+            return $true
+        })]
     [Double]$CMMemory = 8GB,
 
     [Parameter()]
-    [ValidateScript({
-        if (-not [System.IO.File]::Exists($_) -And ($_ -notmatch "\.iso$")) {
-            throw "File '$_' does not exist or is not of type '.iso'"
-        }
-        elseif (-not $_.StartsWith($labSources)) {
-            throw "Please move SQL ISO to your Lab Sources folder '$labSources\ISOs'"
-        }
-        return $true
-    })]
+    [ValidateScript( {
+            if (-not [System.IO.File]::Exists($_) -And ($_ -notmatch "\.iso$"))
+            {
+                throw "File '$_' does not exist or is not of type '.iso'"
+            }
+            elseif (-not $_.StartsWith($labSources))
+            {
+                throw "Please move SQL ISO to your Lab Sources folder '$labSources\ISOs'"
+            }
+            return $true
+        })]
     [String]$SQLServer2017ISO,
 
     [Parameter()]
@@ -290,9 +312,10 @@ $NewLabDefinitionSplat = @{
     ReferenceDiskSizeInGB       = 100
     ErrorAction                 = "Stop"
 }
-if ($PSBoundParameters.ContainsKey("VMPath")) { 
+if ($PSBoundParameters.ContainsKey("VMPath"))
+{ 
     $Path = Join-Path -Path $VMPath -ChildPath $LabName
-    $NewLabDefinitionSplat.Add("VMPath",$Path)
+    $NewLabDefinitionSplat.Add("VMPath", $Path)
 }
 New-LabDefinition @NewLabDefinitionSplat
 #endregion
@@ -307,10 +330,11 @@ $PSDefaultParameterValues = @{
     'Add-LabMachineDefinition:Memory'          = 1GB
 }
 
-if ($AutoLogon.IsPresent) {
+if ($AutoLogon.IsPresent)
+{
     $PSDefaultParameterValues['Add-LabMachineDefinition:AutoLogonDomainName'] = $Domain
-    $PSDefaultParameterValues['Add-LabMachineDefinition:AutoLogonUserName']   = $AdminUser
-    $PSDefaultParameterValues['Add-LabMachineDefinition:AutoLogonPassword']   = $AdminPass
+    $PSDefaultParameterValues['Add-LabMachineDefinition:AutoLogonUserName'] = $AdminUser
+    $PSDefaultParameterValues['Add-LabMachineDefinition:AutoLogonPassword'] = $AdminPass
 }
 
 $DataDisk = "{0}-DATA-01" -f $CMHostname
@@ -320,49 +344,65 @@ $SQLConfigurationFile = Join-Path -Path $labSources -ChildPath "CustomRoles\CM-1
 #endregion
 
 #region Preflight checks
-switch ($true) {
-    (-not $SkipLabNameCheck.IsPresent) {
-        if ((Get-Lab -List -ErrorAction SilentlyContinue) -contains $_) { 
+switch ($true)
+{
+    (-not $SkipLabNameCheck.IsPresent)
+    {
+        if ((Get-Lab -List -ErrorAction SilentlyContinue) -contains $_)
+        { 
             throw ("Lab already exists with the name '{0}'" -f $LabName)
         }
     }
-    (-not $SkipDomainCheck.IsPresent) {
-        try {
+    (-not $SkipDomainCheck.IsPresent)
+    {
+        try
+        {
             [System.Net.Dns]::Resolve($Domain) | Out-Null
             throw ("Domain '{0}' resolves, choose a different domain" -f $Domain)
         }
-        catch {
+        catch
+        {
             # resume
         }
     }
-    (-not $SkipHostnameCheck.IsPresent) {
-        foreach ($Hostname in @($DCHostname,$CMHostname)) {
-            try {
+    (-not $SkipHostnameCheck.IsPresent)
+    {
+        foreach ($Hostname in @($DCHostname, $CMHostname))
+        {
+            try
+            {
                 [System.Net.Dns]::Resolve($Hostname) | Out-Null
                 throw ("Host '{0}' resolves, choose a different hostname" -f $Hostname)
             }
-            catch {
+            catch
+            {
                 continue
             }
         }
     }
     # I know I can use ParameterSets, but I want to be able to execute this script without any parameters too, so this is cleaner.
-    ($PostInstallations.IsPresent -And $ExcludePostInstallations.IsPresent) {
+    ($PostInstallations.IsPresent -And $ExcludePostInstallations.IsPresent)
+    {
         throw "Can not use -PostInstallations and -ExcludePostInstallations together"
     }
-    ($NoInternetAccess.IsPresent -And $PSBoundParameters.ContainsKey("ExternalVMSwitchName")) {
+    ($NoInternetAccess.IsPresent -And $PSBoundParameters.ContainsKey("ExternalVMSwitchName"))
+    {
         throw "Can not use -NoInternetAccess and -ExternalVMSwitchName together"
     }
-    ((-not $NoInternetAccess.IsPresent) -And $ExternalVMSwitchName -eq 'Default Switch') { 
+    ((-not $NoInternetAccess.IsPresent) -And $ExternalVMSwitchName -eq 'Default Switch')
+    { 
         break
     }
-    ((-not $NoInternetAccess.IsPresent) -And (Get-VMSwitch).Name -notcontains $ExternalVMSwitchName) { 
+    ((-not $NoInternetAccess.IsPresent) -And (Get-VMSwitch).Name -notcontains $ExternalVMSwitchName)
+    { 
         throw ("Hyper-V virtual switch '{0}' does not exist" -f $ExternalVMSwitchName)
     }
-    ((-not $NoInternetAccess.IsPresent) -And (Get-VMSwitch -Name $ExternalVMSwitchName).SwitchType -ne "External") { 
+    ((-not $NoInternetAccess.IsPresent) -And (Get-VMSwitch -Name $ExternalVMSwitchName).SwitchType -ne "External")
+    { 
         throw ("Hyper-V virtual switch '{0}' is not of External type" -f $ExternalVMSwitchName)
     }
-    (-not(Test-Path $SQLConfigurationFile)) {
+    (-not(Test-Path $SQLConfigurationFile))
+    {
         throw ("Can't find '{0}'" -f $SQLConfigurationFile)
     }
 }
@@ -374,32 +414,39 @@ Set-LabInstallationCredential -Username $AdminUser -Password $AdminPass
 #endregion
 
 #region Get SQL Server 2017 Eval if no .ISO given
-if (-not $PSBoundParameters.ContainsKey("SQLServer2017ISO")) {
+if (-not $PSBoundParameters.ContainsKey("SQLServer2017ISO"))
+{
     Write-ScreenInfo -Message "Downloading SQL Server 2017 Evaluation" -TaskStart
 
     $URL = "https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso"
     $SQLServer2017ISO = Join-Path -Path $labSources -ChildPath "ISOs\SQLServer2017-x64-ENU.iso"
 
-    if (Test-Path $SQLServer2017ISO) {
+    if (Test-Path $SQLServer2017ISO)
+    {
         Write-ScreenInfo -Message ("SQL Server 2017 Evaluation ISO already exists, delete '{0}' if you want to download again" -f $SQLServer2017ISO)
     }
-    else {
-        try {
+    else
+    {
+        try
+        {
             Write-ScreenInfo -Message "Downloading SQL Server 2017 ISO" -TaskStart
             Get-LabInternetFile -Uri $URL -Path (Split-Path $SQLServer2017ISO -Parent) -FileName (Split-Path $SQLServer2017ISO -Leaf) -ErrorAction "Stop"
             Write-ScreenInfo -Message "Done" -TaskEnd
         }
-        catch {
+        catch
+        {
             $Message = "Failed to download SQL Server 2017 ISO ({0})" -f $_.Exception.Message
             Write-ScreenInfo -Message $Message -Type "Error" -TaskEnd
             throw $Message
         }
-        if (-not (Test-Path $SQLServer2017ISO)) {
+        if (-not (Test-Path $SQLServer2017ISO))
+        {
             $Message = "Could not find SQL Server 2017 ISO '{0}' after download supposedly complete" -f $SQLServer2017ISO
             Write-ScreenInfo -Message $Message -Type "Error" -TaskEnd
             throw $Message
         }
-        else {
+        else
+        {
             Write-ScreenInfo -Message "Download complete" -TaskEnd
         }
     }
@@ -408,14 +455,16 @@ if (-not $PSBoundParameters.ContainsKey("SQLServer2017ISO")) {
 #endregion
 
 #region Forcing site version to be 1902 if -NoInternetAccess is passed
-if ($NoInternetAccess.IsPresent -And $CMVersion -ne "1902") {
+if ($NoInternetAccess.IsPresent -And $CMVersion -ne "1902")
+{
     Write-ScreenInfo -Message "Switch -NoInternetAccess is passed therefore will not be able to update ConfigMgr, forcing target version to be '1902' to skip checking for updates later"
     $CMVersion = "1902"
 }
 #endregion
 
 #region Forcing log viewer to be CMTrace if $CMVersion -eq 1902
-if ($CMVersion -eq 1902 -and $LogViewer -eq "OneTrace") {
+if ($CMVersion -eq 1902 -and $LogViewer -eq "OneTrace")
+{
     Write-ScreenInfo -Message "Setting LogViewer to 'CMTrace' as OneTrace is only available in 1906 or newer" -Type "Warning"
     $LogViewer = "CMTrace"
 }
@@ -426,15 +475,16 @@ $netAdapter = @()
 $Roles = @("RootDC")
 
 $AddLabVirtualNetworkDefinitionSplat = @{
-    Name                   = $LabName
-    VirtualizationEngine   = "HyperV"
+    Name                 = $LabName
+    VirtualizationEngine = "HyperV"
 }
 
 $NewLabNetworkAdapterDefinitionSplat = @{
     VirtualSwitch = $LabName
 }
 
-if ($PSBoundParameters.ContainsKey("AddressSpace")) {
+if ($PSBoundParameters.ContainsKey("AddressSpace"))
+{
     $AddLabVirtualNetworkDefinitionSplat.Add("AddressSpace", $AddressSpace)
     $NewLabNetworkAdapterDefinitionSplat.Add("Ipv4Address", $AddressSpace)
 }
@@ -442,7 +492,8 @@ if ($PSBoundParameters.ContainsKey("AddressSpace")) {
 Add-LabVirtualNetworkDefinition @AddLabVirtualNetworkDefinitionSplat
 $netAdapter += New-LabNetworkAdapterDefinition @NewLabNetworkAdapterDefinitionSplat
 
-if (-not $NoInternetAccess.IsPresent) {
+if (-not $NoInternetAccess.IsPresent)
+{
     Add-LabVirtualNetworkDefinition -Name $ExternalVMSwitchName -VirtualizationEngine "HyperV" -HyperVProperties @{ SwitchType = 'External'; AdapterName = $ExternalVMSwitchName }
     $netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch $ExternalVMSwitchName -UseDhcp
     $Roles += "Routing"
@@ -454,40 +505,44 @@ Add-LabIsoImageDefinition -Name SQLServer2017 -Path $SQLServer2017ISO
 
 $sqlRole = Get-LabMachineRoleDefinition -Role SQLServer2017 -Properties @{ 
     ConfigurationFile = [String]$SQLConfigurationFile
-    Collation = "SQL_Latin1_General_CP1_CI_AS"
+    Collation         = "SQL_Latin1_General_CP1_CI_AS"
 }
 
 Add-LabDiskDefinition -Name $DataDisk -DiskSizeInGb 50 -Label "DATA01" -DriveLetter "G"
 Add-LabDiskDefinition -Name $SQLDisk -DiskSizeInGb 30 -Label "SQL01" -DriveLetter "F"
 
-if ($ExcludePostInstallations.IsPresent) {
+if ($ExcludePostInstallations.IsPresent)
+{
     Add-LabMachineDefinition -Name $CMHostname -Processors $CMCPU -Roles $sqlRole -MaxMemory $CMMemory -DiskName $DataDisk, $SQLDisk
 }
-else {
+else
+{
     $CMRole = Get-LabPostInstallationActivity -CustomRole "CM-1902" -Properties @{
-        CMSiteCode              = $SiteCode
-        CMSiteName              = $SiteName
-        CMBinariesDirectory     = "{0}\SoftwarePackages\CM1902" -f $labSources
-        CMPreReqsDirectory      = "{0}\SoftwarePackages\CMPreReqs" -f $labSources
-        CMProductId             = "Eval" # Can be "Eval" or a product key
-        Version                 = $CMVersion
-        AdkDownloadPath         = "{0}\SoftwarePackages\ADK" -f $labSources
-        WinPEDownloadPath       = "{0}\SoftwarePackages\WinPE" -f $labSources
-        LogViewer               = $LogViewer
-        SqlServerName           = $CMHostname
-        DoNotDownloadWMIEv2     = $DoNotDownloadWMIEv2.IsPresent.ToString()
-        AdminUser               = $AdminUser
-        AdminPass               = $AdminPass
+        CMSiteCode          = $SiteCode
+        CMSiteName          = $SiteName
+        CMBinariesDirectory = "{0}\SoftwarePackages\CM1902" -f $labSources
+        CMPreReqsDirectory  = "{0}\SoftwarePackages\CMPreReqs" -f $labSources
+        CMProductId         = "Eval" # Can be "Eval" or a product key
+        Version             = $CMVersion
+        AdkDownloadPath     = "{0}\SoftwarePackages\ADK" -f $labSources
+        WinPEDownloadPath   = "{0}\SoftwarePackages\WinPE" -f $labSources
+        LogViewer           = $LogViewer
+        SqlServerName       = $CMHostname
+        DoNotDownloadWMIEv2 = $DoNotDownloadWMIEv2.IsPresent.ToString()
+        AdminUser           = $AdminUser
+        AdminPass           = $AdminPass
     }
     Add-LabMachineDefinition -Name $CMHostname -Processors $CMCPU -Roles $sqlRole -MaxMemory $CMMemory -DiskName $DataDisk, $SQLDisk -PostInstallationActivity $CMRole
 }
 #endregion
 
 #region Install
-if ($PostInstallations.IsPresent) {
+if ($PostInstallations.IsPresent)
+{
     Install-Lab -PostInstallations -NoValidation
 }
-else {
+else
+{
     Install-Lab
 }
 Show-LabDeploymentSummary -Detailed

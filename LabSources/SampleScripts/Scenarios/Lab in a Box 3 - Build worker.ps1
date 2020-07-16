@@ -9,14 +9,14 @@ param
     [string]
     $LabName = 'LabAsAService',
 
-    [ValidateSet('yes','no')]
+    [ValidateSet('yes', 'no')]
     $TelemetryOptOut = 'no' # Opt out of telemetry for build worker by saying yes here
 )
 
 New-LabDefinition -Name $labName -DefaultVirtualizationEngine HyperV
 Add-LabVirtualNetworkDefinition -Name $labName -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
 
-$role = Get-LabPostInstallationActivity -CustomRole LabBuilder -Properties @{TelemetryOptOut = $TelemetryOptOut}
+$role = Get-LabPostInstallationActivity -CustomRole LabBuilder -Properties @{ TelemetryOptOut = $TelemetryOptOut }
 
 $machineParameters = @{
     Name                     = 'NestedBuilder'
@@ -56,5 +56,5 @@ $labCreationJob = Invoke-RestMethod -Method Get -Uri http://NestedBuilder/Lab?Id
 # Remove lab
 Invoke-RestMethod -Method Get -Uri http://NestedBuilder/Lab?Name=Win10 # Retrieve lab properties
 
-$request = @{Name = 'Win10'} | ConvertTo-Json
+$request = @{Name = 'Win10' } | ConvertTo-Json
 Invoke-RestMethod -Method Delete -Uri http://NestedBuilder/Lab -Body $request -ContentType application/json

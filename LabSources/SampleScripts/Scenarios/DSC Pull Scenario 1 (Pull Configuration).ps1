@@ -34,9 +34,9 @@ Set-LabInstallationCredential -Username Install -Password Somepass1
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
-    'Add-LabMachineDefinition:Memory' = 1GB
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
+    'Add-LabMachineDefinition:Memory'          = 1GB
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
 }
 

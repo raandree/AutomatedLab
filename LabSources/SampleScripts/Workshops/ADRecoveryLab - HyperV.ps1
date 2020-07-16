@@ -30,10 +30,10 @@ Add-LabDiskDefinition -Name BackupChild -DiskSizeInGb 40
 
 #Set the parameters that are the same for all machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:ToolsPath' = "$labSources\Tools"
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:Processors' = 2
-    'Add-LabMachineDefinition:Memory' = 768MB
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:Processors'      = 2
+    'Add-LabMachineDefinition:Memory'          = 768MB
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
 }
 

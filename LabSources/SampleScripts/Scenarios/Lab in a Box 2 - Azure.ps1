@@ -30,17 +30,17 @@ Add-LabAzureSubscription -DefaultLocationName $azureDefaultLocation
 Add-LabVirtualNetworkDefinition -Name $labName -AddressSpace 192.168.25.1/24
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2016 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Memory'= 1GB
-    'Add-LabMachineDefinition:DomainName'= 'contoso.com'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
+    'Add-LabMachineDefinition:Memory'          = 1GB
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
 }
 
 Add-LabMachineDefinition -Name ALDC1 -Roles RootDC
 
 Add-LabDiskDefinition -Name AL1D -DiskSizeInGb 100
-Add-LabMachineDefinition -Name AL1 -Memory 32GB -OperatingSystem 'Windows Server Datacenter' -DiskName AL1D -Roles HyperV -AzureProperties @{RoleSize = 'Standard_D4s_v3'}
+Add-LabMachineDefinition -Name AL1 -Memory 32GB -OperatingSystem 'Windows Server Datacenter' -DiskName AL1D -Roles HyperV -AzureProperties @{RoleSize = 'Standard_D4s_v3' }
 
 #Add-LabDiskDefinition -Name AL2D -DiskSizeInGb 100
 #Add-LabMachineDefinition -Name AL2 -Memory 32GB -OperatingSystem 'Windows Server 2016 Datacenter (Desktop Experience)' -DiskName AL2D -Roles HyperV -AzureProperties @{RoleSize = 'Standard_D4s_v3'}

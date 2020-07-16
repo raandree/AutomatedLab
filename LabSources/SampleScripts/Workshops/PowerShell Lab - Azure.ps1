@@ -23,11 +23,11 @@ Set-LabInstallationCredential -Username Install -Password 'P@ssw0rd!1'
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
-    'Add-LabMachineDefinition:DnsServer1' = '192.168.30.10'
-    'Add-LabMachineDefinition:DnsServer2' = '192.168.30.11'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.30.10'
+    'Add-LabMachineDefinition:DnsServer2'      = '192.168.30.11'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
 }
 
@@ -48,7 +48,7 @@ $roles = Get-LabMachineRoleDefinition -Role FileServer
 Add-LabDiskDefinition -Name premium1 -DiskSizeInGb 128
 Add-LabDiskDefinition -Name premium2 -DiskSizeInGb 128
 # Using SSD storage for the additional disks
-Add-LabMachineDefinition -Name POSHFS1 -Memory 512MB -DiskName premium1,premium2 -Roles $roles -IpAddress 192.168.30.50 -AzureProperties @{StorageSku = 'StandardSSD_LRS'}
+Add-LabMachineDefinition -Name POSHFS1 -Memory 512MB -DiskName premium1, premium2 -Roles $roles -IpAddress 192.168.30.50 -AzureProperties @{StorageSku = 'StandardSSD_LRS' }
 
 #web server
 $roles = Get-LabMachineRoleDefinition -Role WebServer

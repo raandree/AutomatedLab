@@ -34,13 +34,13 @@ Set-LabInstallationCredential -Username ($DomainJoinCredential.UserName -split '
 Add-LabDomainDefinition -Name $DomainName -AdminUser ($DomainJoinCredential.UserName -split '\\')[-1] -AdminPassword $DomainJoinCredential.GetNetworkCredential().Password
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:DomainName' = $DomainName
+    'Add-LabMachineDefinition:DomainName'      = $DomainName
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server Datacenter'
-    'Add-LabMachineDefinition:Memory' = 4GB
-    'Add-LabMachineDefinition:Network' = "Network$DomainName"
+    'Add-LabMachineDefinition:Memory'          = 4GB
+    'Add-LabMachineDefinition:Network'         = "Network$DomainName"
 }
 
-Add-LabVirtualNetworkDefinition -Name "Network$DomainName" -HyperVProperties @{AdapterName = $ExternalAdapterName; SwitchType = 'External'}
+Add-LabVirtualNetworkDefinition -Name "Network$DomainName" -HyperVProperties @{AdapterName = $ExternalAdapterName; SwitchType = 'External' }
 Add-LabMachineDefinition -Name $dcName -Roles RootDc -SkipDeployment -IpAddress $dcIp
 Add-LabMachineDefinition -Name POSHFS01
 Add-LabMachineDefinition -Name POSHWEB01

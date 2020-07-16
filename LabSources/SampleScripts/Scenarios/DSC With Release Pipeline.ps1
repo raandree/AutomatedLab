@@ -24,12 +24,12 @@ Set-LabInstallationCredential -Username Install -Password Somepass1
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
-    'Add-LabMachineDefinition:DnsServer1' = '192.168.30.10'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.30.10'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Gateway' = '192.168.30.50'
+    'Add-LabMachineDefinition:Gateway'         = '192.168.30.50'
 }
 
 #The PostInstallationActivity is just creating some users

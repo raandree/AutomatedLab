@@ -30,12 +30,12 @@ Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ Swit
 $netAdapter = @()
 $netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch $labName
 $netAdapter += New-LabNetworkAdapterDefinition -VirtualSwitch 'Default Switch' -UseDhcp
-Add-LabMachineDefinition -Name BLD01 -Memory ((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory * 0.75) -Roles HyperV,TfsBuildWorker -OperatingSystem 'Windows Server 2019 Datacenter (Desktop Experience)' -NetworkAdapter $netAdapter
+Add-LabMachineDefinition -Name BLD01 -Memory ((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory * 0.75) -Roles HyperV, TfsBuildWorker -OperatingSystem 'Windows Server 2019 Datacenter (Desktop Experience)' -NetworkAdapter $netAdapter
 
 $role = Get-LabMachineRoleDefinition -Role TfsBuildWorker -Properties @{
-        Organisation = $Organisation
-        PAT          = $PersonalAccessToken.GetNetworkCredential().Password
-    }
+    Organisation = $Organisation
+    PAT          = $PersonalAccessToken.GetNetworkCredential().Password
+}
 Add-LabMachineDefinition -Name AzDevOps -Roles $role -SkipDeployment
 
 Install-Lab

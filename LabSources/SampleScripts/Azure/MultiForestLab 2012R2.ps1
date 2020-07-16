@@ -15,7 +15,7 @@ Add-LabAzureSubscription -DefaultLocationName $azureDefaultLocation
 
 #make the network definition
 Add-LabVirtualNetworkDefinition -Name Forest1 -AddressSpace 192.168.41.0/24 -AzureProperties @{ DnsServers = '192.168.41.10'; ConnectToVnets = 'Forest2', 'Forest3'; LocationName = $azureDefaultLocation }
-Add-LabVirtualNetworkDefinition -Name Forest2 -AddressSpace 192.168.42.0/24 -AzureProperties @{ DnsServers = '192.168.42.10'; ConnectToVnets = 'Forest1','Forest3'; LocationName = $azureDefaultLocation }
+Add-LabVirtualNetworkDefinition -Name Forest2 -AddressSpace 192.168.42.0/24 -AzureProperties @{ DnsServers = '192.168.42.10'; ConnectToVnets = 'Forest1', 'Forest3'; LocationName = $azureDefaultLocation }
 Add-LabVirtualNetworkDefinition -Name Forest3 -AddressSpace 192.168.43.0/24 -AzureProperties @{ DnsServers = '192.168.43.10'; ConnectToVnets = 'Forest1', 'Forest2'; LocationName = $azureDefaultLocation }
 
 #and the domain definition with the domain admin account
@@ -27,9 +27,9 @@ Add-LabDomainDefinition -Name forest3.net -AdminUser Install -AdminPassword 'P@s
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2012 R2 Datacenter (Server with a GUI)'
-    'Add-LabMachineDefinition:Memory' = 512MB
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2012 R2 Datacenter (Server with a GUI)'
+    'Add-LabMachineDefinition:Memory'          = 512MB
 }
 
 #--------------------------------------------------------------------------------------------------------------------

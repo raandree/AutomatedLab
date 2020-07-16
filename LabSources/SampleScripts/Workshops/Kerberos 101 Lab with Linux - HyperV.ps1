@@ -23,11 +23,11 @@ Add-LabIsoImageDefinition -Name SQLServer2014 -Path $labSources\ISOs\en_sql_serv
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2016 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Memory'= 1GB
-    'Add-LabMachineDefinition:Gateway' = '192.168.22.200'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
+    'Add-LabMachineDefinition:Memory'          = 1GB
+    'Add-LabMachineDefinition:Gateway'         = '192.168.22.200'
 }
 
 #========== #these credentials are used for connecting to the machines in the root doamin vm.net. ==========================

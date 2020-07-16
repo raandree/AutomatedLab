@@ -7,8 +7,8 @@ Add-LabDomainDefinition -Name $domainName -AdminUser Install -AdminPassword Some
 Set-LabInstallationCredential -Username Install -Password Somepass1
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2019 Datacenter'
 }
 

@@ -6,10 +6,10 @@ Add-LabVirtualNetworkDefinition -Name $labName -AddressSpace 192.168.130.0/24
 Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DnsServer1' = '192.168.130.10'
-    'Add-LabMachineDefinition:Memory' = 1.5GB
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.130.10'
+    'Add-LabMachineDefinition:Memory'          = 1.5GB
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter'
 }
 $PSDefaultParameterValues.Add('Add-LabMachineDefinition:Gateway', '192.168.130.10')
@@ -35,4 +35,4 @@ Add-LabMachineDefinition -Name LINSU2 -OperatingSystem 'openSUSE Leap 15.1' -Sus
 Install-Lab
 
 break
-Invoke-LabCommand -ComputerName LINCN1 -ScriptBlock {$PSVersionTable | Format-Table } -PassThru
+Invoke-LabCommand -ComputerName LINCN1 -ScriptBlock { $PSVersionTable | Format-Table } -PassThru

@@ -20,11 +20,11 @@ Add-LabIsoImageDefinition -Name Office2013 -Path $labSources\ISOs\en_office_prof
 Set-LabInstallationCredential -Username Install -Password Somepass1
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DnsServer1' = '192.168.50.10'
-    'Add-LabMachineDefinition:DnsServer2' = '192.168.50.11'
-    'Add-LabMachineDefinition:Memory' = 512MB
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.50.10'
+    'Add-LabMachineDefinition:DnsServer2'      = '192.168.50.11'
+    'Add-LabMachineDefinition:Memory'          = 512MB
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2012 R2 Datacenter (Server with a GUI)'
 }
 
@@ -62,7 +62,7 @@ $roles = (Get-LabMachineRoleDefinition -Role FileServer)
 Add-LabMachineDefinition -Name T3AFS1 -IpAddress 192.168.50.50 -DomainName a.vm.net -Roles $roles
 
 #A SQL server in the child domain 'a' with demo databases
-$roles = Get-LabMachineRoleDefinition -Role SQLServer2014, VisualStudio2015 -Properties @{InstallSampleDatabase = 'true'}
+$roles = Get-LabMachineRoleDefinition -Role SQLServer2014, VisualStudio2015 -Properties @{InstallSampleDatabase = 'true' }
 Add-LabMachineDefinition -Name T3ASQL1 -Memory 1GB -IpAddress 192.168.50.51 -DomainName a.vm.net -Roles $roles
 
 #A server with System Center Orchestrator 2012

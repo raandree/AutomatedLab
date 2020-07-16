@@ -8,7 +8,7 @@ New-LabDefinition -Name LabEx2019 -DefaultVirtualizationEngine HyperV
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2019 Datacenter (Desktop Experience)'
 }
 

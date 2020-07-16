@@ -9,7 +9,7 @@ New-LabDefinition -Name LabEx2016 -DefaultVirtualizationEngine HyperV
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
 }
 

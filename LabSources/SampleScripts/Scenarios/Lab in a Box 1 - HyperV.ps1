@@ -24,11 +24,11 @@ Add-LabVirtualNetworkDefinition -Name $labName
 Add-LabVirtualNetworkDefinition -Name 'Default Switch' -HyperVProperties @{ SwitchType = 'External'; AdapterName = 'Ethernet' }
 
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2019 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Memory'= 1GB
-    'Add-LabMachineDefinition:DomainName'= 'contoso.com'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2019 Datacenter (Desktop Experience)'
+    'Add-LabMachineDefinition:Memory'          = 1GB
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
 }
 
 $netAdapter = @()
@@ -71,7 +71,7 @@ Invoke-LabCommand -ActivityName 'Install AutomatedLab and create LabSources fold
 }
 
 Copy-LabFileItem -ComputerName $alServers -DestinationFolderPath "C:\LabSources\ISOs" -Path `
-$labSources\ISOs\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO
+    $labSources\ISOs\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO
 
 Invoke-LabCommand -ActivityName 'Deploy Test Lab' -ComputerName $alServers -ScriptBlock {
 

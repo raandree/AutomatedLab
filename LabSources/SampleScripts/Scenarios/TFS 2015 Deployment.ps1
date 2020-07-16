@@ -4,7 +4,7 @@ $PSDefaultParameterValues = @{
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
     'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
     'Add-LabMachineDefinition:Memory'          = 2GB
-    'Add-LabMachineDefinition:Tools'          = "$labsources\Tools"
+    'Add-LabMachineDefinition:Tools'           = "$labsources\Tools"
 }
 
 Add-LabDomainDefinition -Name contoso.com -AdminUser Install -AdminPassword Somepass1

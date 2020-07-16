@@ -12,9 +12,9 @@ Add-LabDomainDefinition -Name forest3.net -AdminUser Install -AdminPassword Some
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:OperatingSystem'= 'Windows Server 2016 Datacenter (Desktop Experience)'
-    'Add-LabMachineDefinition:Memory'= 512MB
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
+    'Add-LabMachineDefinition:Memory'          = 512MB
 }
 
 #--------------------------------------------------------------------------------------------------------------------

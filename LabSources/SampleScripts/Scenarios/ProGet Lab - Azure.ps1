@@ -15,11 +15,11 @@ Add-LabVirtualNetworkDefinition -Name $labName -AddressSpace 192.168.110.0/24
 
 #defining default parameter values, as these ones are the same for all the machines
 $PSDefaultParameterValues = @{
-    'Add-LabMachineDefinition:Network' = $labName
-    'Add-LabMachineDefinition:ToolsPath'= "$labSources\Tools"
-    'Add-LabMachineDefinition:DomainName' = 'contoso.com'
-    'Add-LabMachineDefinition:DnsServer1' = '192.168.110.10'
-    'Add-LabMachineDefinition:Gateway' = '192.168.110.10'
+    'Add-LabMachineDefinition:Network'         = $labName
+    'Add-LabMachineDefinition:ToolsPath'       = "$labSources\Tools"
+    'Add-LabMachineDefinition:DomainName'      = 'contoso.com'
+    'Add-LabMachineDefinition:DnsServer1'      = '192.168.110.10'
+    'Add-LabMachineDefinition:Gateway'         = '192.168.110.10'
     'Add-LabMachineDefinition:OperatingSystem' = 'Windows Server 2016 Datacenter (Desktop Experience)'
 }
 
@@ -30,7 +30,7 @@ Add-LabMachineDefinition -Name PGDC1 -Memory 1GB -Roles RootDC -IpAddress 192.16
 #web server
 $role = Get-LabPostInstallationActivity -CustomRole ProGet5 -Properties @{
     ProGetDownloadLink = 'https://s3.amazonaws.com/cdn.inedo.com/downloads/proget/ProGetSetup5.2.13.exe'
-    SqlServer = 'PGSql1'
+    SqlServer          = 'PGSql1'
 }
 Add-LabMachineDefinition -Name PGWeb1 -Memory 1GB -Roles WebServer -IpAddress 192.168.110.51 -PostInstallationActivity $role
 

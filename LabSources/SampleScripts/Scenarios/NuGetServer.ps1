@@ -25,7 +25,7 @@ $PSDefaultParameterValues = @{
 
 Add-LabMachineDefinition -Name NUGDC1 -Memory 2gB -Roles RootDC, CARoot -IpAddress 192.168.30.10
 $role = Get-LabPostInstallationActivity -CustomRole NuGetServer -Properties @{
-    Package              = 'PSFramework','PSTranslate' # "Mandatory" if PackagePath is not used
+    Package = 'PSFramework', 'PSTranslate' # "Mandatory" if PackagePath is not used
     #PackagePath          = "D:\tmp\Packages" # Optional - only if Packages is not used, define a directory containing nuget files to publish
     #SourceRepositoryName = 'PSGallery' # Optional, valid if Packages is not used - if you want to download your packages from a different upstream gallery than PSGallery
     #ApiKey               = 'MySecureApiKey' # Optional - defaults to lab installation password, e.g. Somepass1

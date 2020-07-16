@@ -6,8 +6,6 @@
 
 New-LabDefinition -Name AgpmLab10 -DefaultVirtualizationEngine HyperV #Azure
 
-#Add-LabAzureSubscription -SubscriptionName AL1 -DefaultLocationName 'West Europe'
-
 Add-LabMachineDefinition -Name a1DC -Memory 1GB -OperatingSystem 'Windows Server 2016 Datacenter (Desktop Experience)' -Roles RootDC -DomainName contoso.com
 Add-LabMachineDefinition -Name a1Server -Memory 1GB -OperatingSystem 'Windows Server 2016 Datacenter (Desktop Experience)' -DomainName contoso.com
 Add-LabMachineDefinition -Name a1AgpmServer -Memory 1GB -OperatingSystem 'Windows Server 2016 Datacenter (Desktop Experience)' -DomainName contoso.com
@@ -34,13 +32,13 @@ if ((Get-Lab).DefaultVirtualizationEngine -eq 'Azure')
 }
 
 $agpmSettings = @{
-    InstallationLog = 'C:\AGPM-Install.log'
-    OwnerGroupName = 'AgpmOwners'
+    InstallationLog    = 'C:\AGPM-Install.log'
+    OwnerGroupName     = 'AgpmOwners'
     ServiceAccountName = 'AgpmService'
-    UsersGroupName = 'AgpmUsers'
-    DomainName = $agpmServer.DomainName.Split('.')[0] #NetBIOS name is required
-    PasswordPlain = 'Password1'
-    Password = 'Password1' | ConvertTo-SecureString -AsPlainText -Force
+    UsersGroupName     = 'AgpmUsers'
+    DomainName         = $agpmServer.DomainName.Split('.')[0] #NetBIOS name is required
+    PasswordPlain      = 'Password1'
+    Password           = 'Password1' | ConvertTo-SecureString -AsPlainText -Force
 }
 
 Invoke-LabCommand -ComputerName (Get-LabVM -Role RootDC) -ScriptBlock {
@@ -61,10 +59,10 @@ Invoke-LabCommand -ComputerName (Get-LabVM -Role RootDC) -ScriptBlock {
 
 #Installation of AGPM Server
 $agpmCommandLineArgs = '/quiet /log {0} /msicl "VAULT_OWNER={1} SVC_USERNAME={2} SVC_PASSWORD={3} USERRUNASSERVICE={2} DSN={1} ADD_PORT_EXCEPTION=0 BRAZILIAN_PT=0 CHINESE_S=0 CHINESE_T=0 ENGLISH=1 FRENCH=0 GERMAN=0 ITALIAN=0 JAPANESE=0 KOREAN=0 RUSSIAN=0 SPANISH=0"' -f
-    $agpmSettings.InstallationLog,
-    ('{0}\{1}' -f $agpmSettings.DomainName, $agpmSettings.OwnerGroupName),
-    ('{0}\{1}' -f $agpmSettings.DomainName, $agpmSettings.ServiceAccountName),
-    $agpmSettings.PasswordPlain
+$agpmSettings.InstallationLog,
+('{0}\{1}' -f $agpmSettings.DomainName, $agpmSettings.OwnerGroupName),
+('{0}\{1}' -f $agpmSettings.DomainName, $agpmSettings.ServiceAccountName),
+$agpmSettings.PasswordPlain
 Install-LabSoftwarePackage -Path $labSources\SoftwarePackages\agpm_403_server_amd64.exe -CommandLine $agpmCommandLineArgs -ComputerName $agpmServer -AsScheduledJob -UseExplicitCredentialsForScheduledJob
 
 #Installation of AGPM Client
