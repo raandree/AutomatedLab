@@ -2856,7 +2856,6 @@ function Install-LabSoftwarePackage
     $parameters.Add('DoNotUseCredSsp', $DoNotUseCredSsp)
     $parameters.Add('PassThru', $True)
     $parameters.Add('AsJob', $True)
-    $parameters.Add('ScriptBlock', (Get-Command -Name Install-SoftwarePackage).ScriptBlock)
 
     if ($parameterSetName -eq 'SinglePackage')
     {
@@ -2916,9 +2915,22 @@ function Install-LabSoftwarePackage
 
     $parameters.ScriptBlock = {
         Import-Module -Name AutomatedLab.Common -ErrorAction SilentlyContinue
+
+        $pattern = '\\\\automatedlabsource[a-z]{6}.file.core.windows.net\\labsources'
+    if ((Test-Path -Path C:\WindowsAzure) -and $path -match $pattern) #Runnign on Azure VM?
+    {
+        $labSourcesDriveLetter = (Get-PSDrive | Where-Object DisplayRoot -Match $pattern)[0].Name #Sometimes, there are two drives, so we need to get the first one
+        $path = $path -replace $pattern, "$($labSourcesDriveLetter):"
+    }
+    
+        if ()
+        # Often issues with Zone Mapping, hence adding *.core.windows.net to local intranet zone.
+        $path = 'HKCU:\\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\windows.net\*.core'
+        New-Item -Path $path -Force | Out-Null
+        New-ItemProperty $path -Name file -Value 1 -Type DWORD -Force | Out-Null
+
         if ($installParams.Path.StartsWith('\\') -and (Test-Path /ALAzure))
-        {
-            # Often issues with Zone Mapping
+        {            
             if ($installParams.DestinationPath)
             {
                 $newPath = (New-Item -ItemType Directory -Path $installParams.DestinationPath -Force).FullName
