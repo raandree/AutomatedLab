@@ -7,7 +7,6 @@
 
 function Download-ExchangeSources
 {
-
     Write-ScreenInfo -Message 'Download Exchange 2019 requirements' -TaskStart
 
     $downloadTargetFolder = "$labSources\ISOs"
@@ -85,7 +84,7 @@ function Install-ExchangeRequirements
 
     foreach ($machine in $machines)
     {
-        $dotnetFrameworkVersion = Get-LabVMDotNetFrameworkVersion -ComputerName $machine #-NoDisplay
+        $dotnetFrameworkVersion = Get-LabVMDotNetFrameworkVersion -ComputerName $machine -NoDisplay
         if ($dotnetFrameworkVersion.Version -lt '4.8')
         {
             Write-ScreenInfo "Installing .net Framework 4.8 on '$machine'" -Type Verbose
@@ -363,6 +362,13 @@ if (-not $OrganizationName)
 {
     $OrganizationName = $lab.Name + 'ExOrg'
 }
+
+Invoke-LabCommand -ActivityName "Add '*.core.windows.net' to local intranet zone" -ScriptBlock {
+    $path = 'HKCU:\\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\windows.net\*.core'
+    New-Item -Path $path -Force
+    New-ItemProperty $path -Name file -Value 1 -Type DWORD -Force
+} -ComputerName $machines
+Restart-LabVM -ComputerName $machines -Wait
 
 Write-ScreenInfo "Intalling Exchange 2019 '$ComputerName'..." -TaskStart
 
