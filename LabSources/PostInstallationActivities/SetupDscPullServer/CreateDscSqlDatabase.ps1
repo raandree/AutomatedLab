@@ -1,18 +1,18 @@
 param (
-	[Parameter(Mandatory)]
-	[string]
-	$DomainAndComputerName,
+    [Parameter(Mandatory)]
+    [string]
+    $DomainAndComputerName,
 
-	[Parameter(Mandatory)]
-	[ValidateSet('Mandatory', 'Optional', 'Strict')]
-    	[string]
-	$Encrypt,
+    [Parameter(Mandatory)]
+    [ValidateSet('Mandatory', 'Optional', 'Strict')]
+    [string]
+    $Encrypt,
 
-    	[string]
-	$ServerInstance,
+    [string]
+    $ServerInstance,
 
-	[bool]
-	$UseNewFeature = $false
+    [bool]
+    $UseNewFeature = $false
 )
 
 [string]$createDbQuery = @'
@@ -29,7 +29,7 @@ SET @DefaultLogPath = (SELECT CONVERT(varchar(max), SERVERPROPERTY('INSTANCEDEFA
 EXECUTE('
 CREATE DATABASE [DSC]
  CONTAINMENT = NONE
- ON  PRIMARY 
+ ON  PRIMARY
 ( NAME = N''DSC'', FILENAME = ''' + @DefaultDataPath + 'DSC.mdf'', SIZE = 16384KB, MAXSIZE = UNLIMITED, FILEGROWTH = 16384KB )
  LOG ON
 ( NAME = N''DSC_log'', FILENAME = ''' + @DefaultLogPath + 'DSC_log.mdf'', SIZE = 2048KB, MAXSIZE = 2048GB, FILEGROWTH = 16384KB )
@@ -47,63 +47,63 @@ begin
 EXEC [DSC].[dbo].[sp_fulltext_database] @action = 'enable'
 end
 GO
-ALTER DATABASE [DSC] SET ANSI_NULL_DEFAULT OFF 
+ALTER DATABASE [DSC] SET ANSI_NULL_DEFAULT OFF
 GO
-ALTER DATABASE [DSC] SET ANSI_NULLS OFF 
+ALTER DATABASE [DSC] SET ANSI_NULLS OFF
 GO
-ALTER DATABASE [DSC] SET ANSI_PADDING OFF 
+ALTER DATABASE [DSC] SET ANSI_PADDING OFF
 GO
-ALTER DATABASE [DSC] SET ANSI_WARNINGS OFF 
+ALTER DATABASE [DSC] SET ANSI_WARNINGS OFF
 GO
-ALTER DATABASE [DSC] SET ARITHABORT OFF 
-GO  
-ALTER DATABASE [DSC] SET AUTO_CLOSE OFF 
+ALTER DATABASE [DSC] SET ARITHABORT OFF
 GO
-ALTER DATABASE [DSC] SET AUTO_SHRINK OFF 
+ALTER DATABASE [DSC] SET AUTO_CLOSE OFF
 GO
-ALTER DATABASE [DSC] SET AUTO_UPDATE_STATISTICS ON 
+ALTER DATABASE [DSC] SET AUTO_SHRINK OFF
 GO
-ALTER DATABASE [DSC] SET CURSOR_CLOSE_ON_COMMIT OFF 
+ALTER DATABASE [DSC] SET AUTO_UPDATE_STATISTICS ON
 GO
-ALTER DATABASE [DSC] SET CURSOR_DEFAULT  GLOBAL 
+ALTER DATABASE [DSC] SET CURSOR_CLOSE_ON_COMMIT OFF
 GO
-ALTER DATABASE [DSC] SET CONCAT_NULL_YIELDS_NULL OFF 
+ALTER DATABASE [DSC] SET CURSOR_DEFAULT  GLOBAL
 GO
-ALTER DATABASE [DSC] SET NUMERIC_ROUNDABORT OFF 
+ALTER DATABASE [DSC] SET CONCAT_NULL_YIELDS_NULL OFF
 GO
-ALTER DATABASE [DSC] SET QUOTED_IDENTIFIER OFF 
+ALTER DATABASE [DSC] SET NUMERIC_ROUNDABORT OFF
 GO
-ALTER DATABASE [DSC] SET RECURSIVE_TRIGGERS OFF 
+ALTER DATABASE [DSC] SET QUOTED_IDENTIFIER OFF
 GO
-ALTER DATABASE [DSC] SET  DISABLE_BROKER 
+ALTER DATABASE [DSC] SET RECURSIVE_TRIGGERS OFF
 GO
-ALTER DATABASE [DSC] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+ALTER DATABASE [DSC] SET  DISABLE_BROKER
 GO
-ALTER DATABASE [DSC] SET DATE_CORRELATION_OPTIMIZATION OFF 
+ALTER DATABASE [DSC] SET AUTO_UPDATE_STATISTICS_ASYNC OFF
 GO
-ALTER DATABASE [DSC] SET TRUSTWORTHY OFF 
+ALTER DATABASE [DSC] SET DATE_CORRELATION_OPTIMIZATION OFF
 GO
-ALTER DATABASE [DSC] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+ALTER DATABASE [DSC] SET TRUSTWORTHY OFF
 GO
-ALTER DATABASE [DSC] SET PARAMETERIZATION SIMPLE 
+ALTER DATABASE [DSC] SET ALLOW_SNAPSHOT_ISOLATION OFF
 GO
-ALTER DATABASE [DSC] SET READ_COMMITTED_SNAPSHOT OFF 
+ALTER DATABASE [DSC] SET PARAMETERIZATION SIMPLE
 GO
-ALTER DATABASE [DSC] SET HONOR_BROKER_PRIORITY OFF 
+ALTER DATABASE [DSC] SET READ_COMMITTED_SNAPSHOT OFF
 GO
-ALTER DATABASE [DSC] SET RECOVERY SIMPLE 
+ALTER DATABASE [DSC] SET HONOR_BROKER_PRIORITY OFF
 GO
-ALTER DATABASE [DSC] SET  MULTI_USER 
+ALTER DATABASE [DSC] SET RECOVERY SIMPLE
 GO
-ALTER DATABASE [DSC] SET PAGE_VERIFY CHECKSUM  
+ALTER DATABASE [DSC] SET  MULTI_USER
 GO
-ALTER DATABASE [DSC] SET DB_CHAINING OFF 
+ALTER DATABASE [DSC] SET PAGE_VERIFY CHECKSUM
 GO
-ALTER DATABASE [DSC] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+ALTER DATABASE [DSC] SET DB_CHAINING OFF
 GO
-ALTER DATABASE [DSC] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+ALTER DATABASE [DSC] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF )
 GO
-ALTER DATABASE [DSC] SET DELAYED_DURABILITY = DISABLED 
+ALTER DATABASE [DSC] SET TARGET_RECOVERY_TIME = 0 SECONDS
+GO
+ALTER DATABASE [DSC] SET DELAYED_DURABILITY = DISABLED
 GO
 EXEC sys.sp_db_vardecimal_storage_format N'DSC', N'ON'
 GO
@@ -173,28 +173,28 @@ BEGIN
 	SET NOCOUNT ON;
 
 	DECLARE @NodeName VARCHAR(255), @EndTime DATE
-  
+
 	DECLARE c CURSOR FOR
 	SELECT NodeName, MAX(EndTime) AS EndTime FROM StatusReport GROUP BY NodeName
-  
+
 	OPEN c
-  
+
 	FETCH NEXT FROM c
 	INTO @NodeName, @EndTime
-  
-	WHILE @@FETCH_STATUS = 0  
-	BEGIN  
-  
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+
 	   PRINT @NodeName
 
 	   UPDATE RegistrationData
 		SET LastUpdated = @EndTime
 		WHERE NodeName = @NodeName
-  
+
 	   FETCH NEXT FROM c
 	   INTO @NodeName, @EndTime
-	END  
-  
+	END
+
 	CLOSE c
 	DEALLOCATE c
 
@@ -233,7 +233,7 @@ CREATE TABLE [dbo].[RegistrationData](
 	[NodeName] [nvarchar](255) NULL,
 	[IPAddress] [nvarchar](255) NULL,
 	[ConfigurationNames] [nvarchar](max) NULL,
- CONSTRAINT [PK_RegistrationData] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_RegistrationData] PRIMARY KEY CLUSTERED
 (
     [AgentId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -258,7 +258,7 @@ CREATE TABLE [dbo].[StatusReport](
 	[StatusData] [nvarchar](max) NULL,
 	[RebootRequested] [nvarchar](255) NULL,
 	[AdditionalData] [nvarchar](max) NULL,
- CONSTRAINT [PK_StatusReport] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_StatusReport] PRIMARY KEY CLUSTERED
 (
     [JobId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -287,7 +287,7 @@ CREATE TABLE [dbo].[StatusReportMetaData](
 	[ResourcesNotInDesiredState] [nvarchar](max) NULL,
 	[Duration] [float] NULL,
 	[DurationWithOverhead] [float] NULL
-CONSTRAINT [PK_StatusReportMetaData] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_StatusReportMetaData] PRIMARY KEY CLUSTERED
 (
     [JobId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -313,7 +313,7 @@ CREATE TABLE [dbo].[TaggingData](
 	[BuildDate] [datetime] NOT NULL,
 	[Timestamp] [datetime] NOT NULL,
 	[Layers] [nvarchar](max) NULL,
-CONSTRAINT [PK_TaggingData] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_TaggingData] PRIMARY KEY CLUSTERED
 (
 	[AgentId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -331,7 +331,7 @@ CREATE TABLE [dbo].[Devices](
 	[LastHeartbeatTime] [datetime] NULL,
 	[Dirty] [bit] NOT NULL,
 	[StatusCode] [int] NULL,
- CONSTRAINT [PK_Devices] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_Devices] PRIMARY KEY CLUSTERED
 (
 	[TargetName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -343,7 +343,7 @@ CREATE TABLE [dbo].[NodeErrorData](
 	[NodeName] [nvarchar](50) NOT NULL,
 	[StartTime] [datetime] NULL,
 	[Errors] [nvarchar](max) NULL
-CONSTRAINT [PK_NodeErrorData] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_NodeErrorData] PRIMARY KEY CLUSTERED
 (
     [NodeName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -361,7 +361,7 @@ CREATE TABLE [dbo].[NodeLastStatusData](
 	[CheckForNewMOF] [int] NULL,
 	[PullServer] [nvarchar](50) NULL,
 	[LastUpdate] [datetime] NULL
-CONSTRAINT [PK_NodeLastStatusData] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_NodeLastStatusData] PRIMARY KEY CLUSTERED
 (
     [NodeName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -372,7 +372,7 @@ GO
 CREATE TABLE [dbo].[RegistrationMetaData](
 	[AgentId] [nvarchar](255) NOT NULL,
 	[CreationTime] [datetime] NOT NULL
-CONSTRAINT [PK_RegistrationMetaData] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_RegistrationMetaData] PRIMARY KEY CLUSTERED
 (
     [AgentId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -483,7 +483,7 @@ RETURNS TABLE
     AS
 RETURN
 (
-    SELECT rd.NodeName AS NodeName, 
+    SELECT rd.NodeName AS NodeName,
            rd.AgentId AS AgentId,
            (SELECT TOP (1) Item FROM dbo.Split(rd.IPAddress, ';') AS IpAddresses) AS IP,
            (SELECT(SELECT [Value] + ',' AS [text()] FROM OPENJSON([ConfigurationNames]) FOR XML PATH (''))) AS ConfigurationName,
@@ -602,7 +602,7 @@ GO
 /****** Object:  View [dbo].[vStatusReportDataNewest]    Script Date: 07.04.2021 16:59:54 ******/
 CREATE VIEW [dbo].[vStatusReportDataNewest]
 AS
-SELECT TOP (1000) dbo.StatusReport.JobId,dbo.RegistrationData.NodeName, dbo.StatusReport.OperationType, dbo.StatusReport.RefreshMode, dbo.StatusReport.Status, dbo.StatusReportMetaData.CreationTime, 
+SELECT TOP (1000) dbo.StatusReport.JobId,dbo.RegistrationData.NodeName, dbo.StatusReport.OperationType, dbo.StatusReport.RefreshMode, dbo.StatusReport.Status, dbo.StatusReportMetaData.CreationTime,
 dbo.StatusReport.StartTime, dbo.StatusReport.EndTime, dbo.StatusReport.Errors, dbo.StatusReport.StatusData
 FROM dbo.StatusReport
 INNER JOIN dbo.StatusReportMetaData ON dbo.StatusReport.JobId = dbo.StatusReportMetaData.JobId
@@ -711,7 +711,7 @@ BEGIN
                     (SELECT [value] FROM OPENJSON((SELECT [value] FROM OPENJSON([StatusData]))) WHERE [key] = 'ResourcesNotInDesiredState')
                 )
             )
-        ,@ErrorMessage = 
+        ,@ErrorMessage =
             (SELECT [ResourceId] + ':' + ' (' + [ErrorCode] + ') ' + [ErrorMessage] + ',' AS [text()]
                 FROM OPENJSON(
                     (SELECT TOP 1  [value] FROM OPENJSON([Errors]))
@@ -720,7 +720,7 @@ BEGIN
                     ErrorMessage nvarchar(2000) '$.ErrorMessage',
                     ErrorCode nvarchar(20) '$.ErrorCode',
                     ResourceId nvarchar(200) '$.ResourceId'
-                ) 
+                )
                 FOR XML PATH ('')
             )
         ,@HostName =
@@ -742,7 +742,7 @@ BEGIN
                 )
                 FOR XML PATH ('')
             )
-        ,@ResourcesNotInDesiredState = 
+        ,@ResourcesNotInDesiredState =
             (SELECT [ResourceId] + ',' AS [text()]
                 FROM OPENJSON(
                     (SELECT [value] FROM OPENJSON((SELECT [value] FROM OPENJSON([StatusData]))) WHERE [key] = 'ResourcesNotInDesiredState')
@@ -864,7 +864,7 @@ BEGIN
 
                     WITH ReadableJSON AS (
                     SELECT
-                              json_value(@j, '$[0].HostName') AS NodeName,   
+                              json_value(@j, '$[0].HostName') AS NodeName,
                               json_value(@j, '$[0].NumberOfResources') AS NumberOfResources,
                               json_value(@j, '$[0].Mode') AS DscMode,
                               json_value(@j, '$[0].MetaConfiguration.ConfigurationMode') AS DscConfigMode,
@@ -900,14 +900,14 @@ GO
 
 USE [master]
 GO
-ALTER DATABASE [DSC] SET READ_WRITE 
+ALTER DATABASE [DSC] SET READ_WRITE
 GO
 '@
 
 if (-not $UseNewFeature)
 {
-	$createDbQuery = $createDbQuery.Replace('WITH CATALOG_COLLATION = DATABASE_DEFAULT','')
-	$createDbQuery = $createDbQuery.Replace(', OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF','')
+    $createDbQuery = $createDbQuery.Replace('WITH CATALOG_COLLATION = DATABASE_DEFAULT', '')
+    $createDbQuery = $createDbQuery.Replace(', OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF', '')
 }
 
 $addPermissionsQuery = @'
@@ -930,20 +930,38 @@ ALTER ROLE [db_datawriter] ADD MEMBER [{1}]
 GO
 '@
 
+$invokeSqlCmd = Get-Command -Name Invoke-Sqlcmd
+$usingSqlServerModule = $invokeSqlCmd.Module.Name -eq 'SqlServer'
+
 if (-not (Test-Path -Path C:\DSCDB))
 {
-	New-Item -ItemType Directory -Path C:\DSCDB | Out-Null
+    New-Item -ItemType Directory -Path C:\DSCDB | Out-Null
 }
 
-$dbCreated = Invoke-Sqlcmd -Query "SELECT name FROM master.sys.databases WHERE name='DSC'" -ServerInstance $ServerInstance -Encrypt $Encrypt
+$sqlParams = @{
+    Query = "SELECT name FROM master.sys.databases WHERE name='DSC'"
+}
+if ($ServerInstance)
+{
+    $sqlParams.ServerInstance = $ServerInstance 
+}
+
+if ($usingSqlServerModule)
+{
+    $sqlParams.TrustServerCertificate = $true
+    $sqlParams.Encrypt = $Encrypt
+}
+
+$dbCreated = Invoke-Sqlcmd @sqlParams
 if (-not $dbCreated)
 {
-	Write-Verbose "Creating the DSC database on the local default SQL instance..."
+    Write-Verbose 'Creating the DSC database on the local default SQL instance...'
 
-	Invoke-Sqlcmd -Query $createDbQuery -ServerInstance $ServerInstance -Encrypt $Encrypt
+    $sqlParams.Query = $createDbQuery
+    Invoke-Sqlcmd @sqlParams
 
-	Write-Verbose 'finished.'
-	Write-Verbose 'Database is stored on C:\DSCDB'
+    Write-Verbose 'finished.'
+    Write-Verbose 'Database is stored on C:\DSCDB'
 }
 
 Write-Verbose "Adding permissions to DSC database for $DomainAndComputerName..."
@@ -953,24 +971,23 @@ $name = ($DomainAndComputerName -split '\\')[1]
 
 if ($ComputerName -eq $env:COMPUTERNAME -and $DomainName -eq $env:USERDOMAIN)
 {
-	$domain = 'NT AUTHORITY'
-	$name = 'SYSTEM'
+    $domain = 'NT AUTHORITY'
+    $name = 'SYSTEM'
 }
 $name = $name + '$'
 
 $account = New-Object System.Security.Principal.NTAccount($domain, $name)
 try
 {
-	$account.Translate([System.Security.Principal.SecurityIdentifier]) | Out-Null
+    $account.Translate([System.Security.Principal.SecurityIdentifier]) | Out-Null
 }
 catch
 {
-	Write-Error "The account '$domain\$name' could not be found"
-	continue
+    Write-Error "The account '$domain\$name' could not be found"
+    continue
 }
 
-$query = $addPermissionsQuery -f $domain, $name
-
-Invoke-Sqlcmd -Query $query -ServerInstance $ServerInstance -Encrypt $Encrypt
+$sqlParams.Query = $addPermissionsQuery -f $domain, $name
+Invoke-Sqlcmd @sqlParams
 
 Write-Verbose 'finished'

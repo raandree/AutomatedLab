@@ -35,7 +35,7 @@
         {
             'Tfs2015' { Get-LabVM -Role SQLServer2014 | Select-Object -First 1 }
             'Tfs2017' { Get-LabVM -Role SQLServer2014, SQLServer2016 | Select-Object -First 1 }
-            'Tfs2018|AzDevOps' { Get-LabVM -Role SQLServer2017, SQLServer2019 | Select-Object -First 1 }
+            'Tfs2018|AzDevOps' { Get-LabVM -Role SQLServer2017, SQLServer2019, SQLServer2022 | Select-Object -First 1 }
             default { throw 'No fitting SQL Server found in lab!' }
         }
         

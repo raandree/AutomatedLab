@@ -208,7 +208,7 @@
         {
             $sqledition = ((Get-LabVm -ComputerName $role.Properties.SqlServer).Roles | Where-Object Name -like SQLServer*).Name -replace 'SQLServer'
             $isNew = $sqledition -ge 2019
-            Invoke-LabCommand -ActivityName 'Creating DSC SQL Database' -FilePath $labSources\PostInstallationActivities\SetupDscPullServer\CreateDscSqlDatabase.ps1 -ComputerName $role.Properties.SqlServer -ArgumentList $machine.DomainAccountName,$isNew
+            Invoke-LabCommand -ActivityName 'Creating DSC SQL Database' -FilePath $labSources\PostInstallationActivities\SetupDscPullServer\CreateDscSqlDatabase.ps1 -ComputerName $role.Properties.SqlServer -ArgumentList $machine.DomainAccountName, 'Optional', $null, $isNew
         }
 
         if ($databaseEngine -eq 'mdb')

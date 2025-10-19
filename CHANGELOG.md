@@ -5,13 +5,14 @@
 ### Added
 
 - Add option to opt out of Storage Account creation (#1753)
-    - Switch to Entra-Auth not possible, as we require storage shares, which would require using ADDS or Azure Domain Services. If SAS keys cannot be used, no storage is the current option.
+  - Switch to Entra-Auth not possible, as we require storage shares, which would require using ADDS or Azure Domain Services. If SAS keys cannot be used, no storage is the current option.
 
 ### Changed
 
 - Updated `Invoke-LabPester` to scan the `$global:LabSources\CustomRoles` directory for Pester tests (#1764)
 - Use Storage Account kind `storagev2` for all new lab sources storages
-    - Storages will be upgraded automatically
+  - Storages will be upgraded automatically.
+- Azure DevOps and DSC Pull Servers are accepting SQL Server 2022.
 
 ### Removed
 
@@ -20,8 +21,8 @@
 ### Bugs
 
 - Removed dependency to NewtonSoft.Json
-    - The module frequently hinders import on Linux, and apparently on Windows now as well (<https://github.com/AutomatedLab/AutomatedLab.Common/issues/132>)
-    - The module has not been updated since 2019
+  - The module frequently hinders import on Linux, and apparently on Windows now as well (<https://github.com/AutomatedLab/AutomatedLab.Common/issues/132>)
+  - The module has not been updated since 2019
 - Fixed issue with case-sensitive Linux OS name matching (#1766)
 - Added filtering to Install-LabSshKnownHost in an attempt to speed up the function
 

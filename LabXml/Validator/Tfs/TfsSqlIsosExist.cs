@@ -59,7 +59,8 @@ namespace AutomatedLab
                     case Roles.AzDevOps:
                         requiredRoles.Add("2017");
                         requiredRoles.Add("2019");
-                        sqlmachines.AddRange(lab.Machines.Where(m => m.Roles.Where(r => r.Name == Roles.SQLServer2017 || r.Name == Roles.SQLServer2019).Count() > 0).Select(m => m.Name));
+                        requiredRoles.Add("2022");
+                        sqlmachines.AddRange(lab.Machines.Where(m => m.Roles.Where(r => r.Name == Roles.SQLServer2017 || r.Name == Roles.SQLServer2019 || r.Name == Roles.SQLServer2022).Count() > 0).Select(m => m.Name));
                         break;
                     default:
                         break;
