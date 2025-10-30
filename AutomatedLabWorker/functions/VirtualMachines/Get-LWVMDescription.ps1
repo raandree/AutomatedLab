@@ -1,4 +1,4 @@
-﻿function Get-LWHypervVMDescription
+﻿function Get-LWVMDescription
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseCompatibleCmdlets", "", Justification="Not relevant on Linux")]
     [CmdletBinding()]

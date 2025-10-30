@@ -174,12 +174,12 @@
             
             foreach ($vm in $hypervVMs)
             {
-                $machineMetadata = Get-LWHypervVMDescription -ComputerName $vm.ResourceName
+                $machineMetadata = Get-LWVMDescription -ComputerName $vm.ResourceName
                 if (($machineMetadata.InitState -band [AutomatedLab.LabVMInitState]::NetworkAdapterBindingCorrected) -ne [AutomatedLab.LabVMInitState]::NetworkAdapterBindingCorrected)
                 {
                     Repair-LWHypervNetworkConfig -ComputerName $vm
                     $machineMetadata.InitState = [AutomatedLab.LabVMInitState]::NetworkAdapterBindingCorrected
-                    Set-LWHypervVMDescription -Hashtable $machineMetadata -ComputerName $vm.ResourceName
+                    Set-LWVMDescription -Hashtable $machineMetadata -ComputerName $vm.ResourceName
                 }
             }
         }

@@ -1,11 +1,11 @@
 ---
 external help file: AutomatedLabWorker-help.xml
 Module Name: AutomatedLabWorker
-online version: https://automatedlab.org/en/latest/AutomatedLabWorker/en-us/Set-LWHypervVMDescription
+online version: https://automatedlab.org/en/latest/AutomatedLabWorker/en-us/Set-LWVMDescription
 schema: 2.0.0
 ---
 
-# Set-LWHypervVMDescription
+# Set-LWVMDescription
 
 ## SYNOPSIS
 Set the Notes field of a Hyper-V VM
@@ -13,7 +13,7 @@ Set the Notes field of a Hyper-V VM
 ## SYNTAX
 
 ```
-Set-LWHypervVMDescription [-Hashtable] <Hashtable> [-ComputerName] <String> [<CommonParameters>]
+Set-LWVMDescription [-Hashtable] <Hashtable> [-ComputerName] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Set the Notes field of a Hyper-V VM to store information about the VMs status.
 
 ### Example 1
 ```powershell
-PS C:\> Set-LWHypervVMDescription -Hashtable @{
+PS C:\> Set-LWVMDescription -Hashtable @{
     CreatedBy = 'JHP'
     Purpose   = 'Compute'
 } -ComputerName HV01

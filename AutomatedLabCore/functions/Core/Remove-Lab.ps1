@@ -103,7 +103,7 @@
 
                 $removeMachines = foreach ($machine in $labMachines)
                 {
-                    $machineMetadata = Get-LWHypervVMDescription -ComputerName $machine.ResourceName -ErrorAction SilentlyContinue
+                    $machineMetadata = Get-LWVMDescription -ComputerName $machine.ResourceName -ErrorAction SilentlyContinue
                     $vm = Get-LWHypervVM -Name $machine.ResourceName -ErrorAction SilentlyContinue
                     if (-not $machineMetadata)
                     {

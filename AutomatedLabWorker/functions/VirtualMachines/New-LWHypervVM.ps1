@@ -587,7 +587,7 @@ restorecon -R /$($domain.Administrator.UserName)@$($Machine.DomainName)/.ssh/
 
     $vm = Hyper-V\New-VM @vmParameter
 
-    Set-LWHypervVMDescription -ComputerName $Machine.ResourceName -Hashtable @{
+    Set-LWVMDescription -ComputerName $Machine.ResourceName -Hashtable @{
         CreatedBy = '{0} ({1})' -f $PSCmdlet.MyInvocation.MyCommand.Module.Name, $PSCmdlet.MyInvocation.MyCommand.Module.Version
         CreationTime = Get-Date
         LabName = (Get-Lab).Name
