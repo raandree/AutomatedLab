@@ -265,8 +265,22 @@
         $jobs = Invoke-LabCommand -PreInstallationActivity -ActivityName 'Pre-installation' -ComputerName $(Get-LabVM -Role RootDC | Where-Object { -not $_.SkipDeployment }) -PassThru -NoDisplay
         $jobs | Where-Object { $_ -is [System.Management.Automation.Job] } | Wait-Job | Out-Null
 
-        Write-ScreenInfo -Message "Machines with RootDC role to be installed: '$((Get-LabVM -Role RootDC).Name -join ', ')'"
-        Install-LabRootDcs -CreateCheckPoints:$CreateCheckPoints
+        $rootDCs = Get-LabVM -Role RootDC
+        Write-ScreenInfo -Message "Machines with 'RootDC' role to be installed: '$($rootDCs.Name -join ', ')'"
+        if ($engine -eq 'Proxmox')
+        {
+            Write-ScreenInfo -Message "Machines with role 'RootDC' are already installed in a Proxmox deployment."
+            #For some reason, the sysprepped Proxmox machines need to be restarted oncemore, otherwise we get this error when connecting:
+            #'We can't sign you in with this credential because your domain isn't available. Make sure your device is connected to your organization's network and try again.'
+            $machinesToRestart = Get-LabVM | Where-Object { $_.DomainName -in $rootDCs.DomainName -and $_.Name -notin $rootDCs.Name -and (Get-LabVMStatus -ComputerName $_) -eq 'Started' }
+            Write-ScreenInfo -Message "Restarting dependent machines: '$($machinesToRestart.Name -join ', ')'" -NoNewLine
+            Restart-LabVM -ComputerName $machinesToRestart -Wait
+            Write-ScreenInfo -Message 'done'
+        }
+        else
+        {
+            Install-LabRootDcs -CreateCheckPoints:$CreateCheckPoints
+        }
         
         New-LabADSubnet
 
@@ -309,8 +323,21 @@
 
         $jobs = Invoke-LabCommand -PreInstallationActivity -ActivityName 'Pre-installation' -ComputerName $(Get-LabVM -Role FirstChildDC | Where-Object { -not $_.SkipDeployment }) -PassThru -NoDisplay
         $jobs | Where-Object { $_ -is [System.Management.Automation.Job] } | Wait-Job | Out-Null
-        Write-ScreenInfo -Message "Machines with FirstChildDC role to be installed: '$((Get-LabVM -Role FirstChildDC).Name -join ', ')'"
-        Install-LabFirstChildDcs -CreateCheckPoints:$CreateCheckPoints
+        
+        $firstChildDCs = Get-LabVM -Role FirstChildDC
+        Write-ScreenInfo -Message "Machines with 'FirstChildDC' role to be installed: '$($firstChildDCs.Name -join ', ')'"
+        if ($engine -eq 'Proxmox')
+        {
+            Write-ScreenInfo -Message "Machines with role 'FirstChildDC' are already installed in a Proxmox deployment."
+            $machinesToRestart = Get-LabVM | Where-Object { $_.DomainName -in $firstChildDCs.DomainName -and $_.Name -notin $firstChildDCs.Name -and (Get-LabVMStatus -ComputerName $_) -eq 'Started' }
+            Write-ScreenInfo -Message "Restarting dependent machines: '$($machinesToRestart.Name -join ', ')'" -NoNewLine
+            Restart-LabVM -ComputerName $machinesToRestart -Wait
+            Write-ScreenInfo -Message 'done'
+        }
+        else
+        {
+            Install-LabFirstChildDcs -CreateCheckPoints:$CreateCheckPoints
+        }
 
         New-LabADSubnet
 
@@ -333,8 +360,21 @@
 
         $jobs = Invoke-LabCommand -PreInstallationActivity -ActivityName 'Pre-installation' -ComputerName $(Get-LabVM -Role DC | Where-Object { -not $_.SkipDeployment }) -PassThru -NoDisplay
         $jobs | Where-Object { $_ -is [System.Management.Automation.Job] } | Wait-Job | Out-Null
-        Write-ScreenInfo -Message "Machines with DC role to be installed: '$((Get-LabVM -Role DC).Name -join ', ')'"
-        Install-LabDcs -CreateCheckPoints:$CreateCheckPoints
+        
+        $dcs = Get-LabVM -Role DC
+        Write-ScreenInfo -Message "Machines with 'DC' role to be installed: '$(($dcs.Name) -join ', ')'"
+        if ($engine -eq 'Proxmox')
+        {
+            Write-ScreenInfo -Message "Machines with role 'DC' are already installed in a Proxmox deployment."
+            $machinesToRestart = Get-LabVM | Where-Object { $_.DomainName -in $dcs.DomainName -and $_.Name -notin $dcs.Name -and (Get-LabVMStatus -ComputerName $_) -eq 'Started' }
+            Write-ScreenInfo -Message "Restarting dependent machines: '$($machinesToRestart.Name -join ', ')'" -NoNewLine
+            Restart-LabVM -ComputerName $machinesToRestart -Wait
+            Write-ScreenInfo -Message 'done'
+        }
+        else
+        {
+            Install-LabDcs -CreateCheckPoints:$CreateCheckPoints
+        }
 
         New-LabADSubnet
 
