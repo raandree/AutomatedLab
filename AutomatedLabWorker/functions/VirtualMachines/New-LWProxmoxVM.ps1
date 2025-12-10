@@ -737,17 +737,18 @@ Subsystem powershell c:/progra~1/powershell/7/pwsh.exe -sshs -NoLogo
         Write-PSFMessage 'Done'
     }
 
-    if ($Machine.ToolsPath.Value)
-    {
-        $toolsDestination = "$vhdVolume\Tools"
-        if ($Machine.ToolsPathDestination)
-        {
-            $toolsDestination = "$($toolsDestination[0])$($Machine.ToolsPathDestination.Substring(1,$Machine.ToolsPathDestination.Length - 1))"
-        }
-        Write-PSFMessage 'Copying tools to VHD...'
-        Copy-Item -Path $Machine.ToolsPath -Destination $toolsDestination -Recurse
-        Write-PSFMessage '...done'
-    }
+    #TODO: In Proxmox, this has to be done later via Copy-LabFileItem
+    #if ($Machine.ToolsPath.Value)
+    #{
+    #    $toolsDestination = "$vhdVolume\Tools"
+    #    if ($Machine.ToolsPathDestination)
+    #    {
+    #        $toolsDestination = "$($toolsDestination[0])$($Machine.ToolsPathDestination.Substring(1,$Machine.ToolsPathDestination.Length - 1))"
+    #    }
+    #    Write-PSFMessage 'Copying tools to VHD...'
+    #    Copy-Item -Path $Machine.ToolsPath -Destination $toolsDestination -Recurse
+    #    Write-PSFMessage '...done'
+    #}
 
     $enableWSManRegDump = @'
 Windows Registry Editor Version 5.00
@@ -870,8 +871,7 @@ Stop-Transcript
     }
     Write-Verbose 'done.'
 
-    $files = dir -Path $vhdVolume
-    #$files += Get-Item -Path 'D:\Get-TopDiskActivityProcesses.ps1'
+    $files = dir -Path $vhdVolume -File
     foreach ($file in $files)
     {
         Write-PSFMessage "Copying file '$($file.Name)' to VM '$($Machine.ResourceName)'"
