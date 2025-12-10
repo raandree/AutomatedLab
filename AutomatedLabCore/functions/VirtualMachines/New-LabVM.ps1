@@ -127,7 +127,7 @@
         {
             foreach ($firstChildDC in $firstChildDCs)
             {
-                New-LWProxmoxVM -Machine $firstChildDCs
+                New-LWProxmoxVM -Machine $firstChildDC
             }
             Wait-LabVM -ComputerName $firstChildDCs
             $sysprepState = Get-LWProxmoxSysprepState -ComputerName $firstChildDCs
