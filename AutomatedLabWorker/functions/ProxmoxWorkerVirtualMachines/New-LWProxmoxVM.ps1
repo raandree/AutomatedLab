@@ -98,6 +98,21 @@ function New-LWProxmoxVM
         return
     }
 
+    # --------------------------- Disk Configuration ------------------------------------------
+
+    # Add the additional hard disks
+    $i = 1
+    foreach ($disk in $Machine.Disks)
+    {
+        $diskHashTable = @{
+            $i = "$($global:proxmoxStorage):$($disk.DiskSize)"
+        }
+        $null = Set-PveNodesQemuConfig -Vmid $nextVmId -Node $global:proxmoxNode -ScsiN $diskHashTable
+        $i++
+    }
+
+    # ------------------------------------------------------------------------------------------
+
     if ($PSDefaultParameterValues.ContainsKey('*:IsKickstart'))
     {
         $PSDefaultParameterValues.Remove('*:IsKickstart')
@@ -872,6 +887,7 @@ Stop-Transcript
     Write-Verbose 'done.'
 
     $files = dir -Path $vhdVolume -File
+    #$files += Get-Item -Path 'D:\Get-TopDiskActivityProcesses.ps1'
     foreach ($file in $files)
     {
         Write-PSFMessage "Copying file '$($file.Name)' to VM '$($Machine.ResourceName)'"
