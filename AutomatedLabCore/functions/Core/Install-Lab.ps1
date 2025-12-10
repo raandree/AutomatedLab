@@ -127,9 +127,13 @@
 
             Write-ScreenInfo -Message 'Done' -TaskEnd
         }
+        catch
+        {
+            Write-Error -Message "There was an error creating the VMs: $($_.Exception.Message)." -Exception $_.Exception
+        }
         finally
         {
-            Remove-Item -Path $labDiskDeploymentInProgressPath -Force
+            Remove-Item -Path $labDiskDeploymentInProgressPath -Force -ErrorAction SilentlyContinue
         }
     }
 
