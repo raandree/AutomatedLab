@@ -46,6 +46,11 @@ function New-LWProxmoxVM
         return
     }
 
+    # Every file in that folder will be copied to the VM
+    $vhdVolume = "C:\ProgramData\AutomatedLab\Labs\$($lab.Name)\Proxmox\VHD\$($Machine.ResourceName)"
+    mkdir -Path $vhdVolume -Force | Out-Null
+
+
     $nextVmId = (Get-LWProxmoxVM -IncludeTemplates | Sort-Object -Property vmid -Descending | Select-Object -First 1).vmid + 1
 
     $param = @{
@@ -108,8 +113,10 @@ function New-LWProxmoxVM
             $i = "$($global:proxmoxStorage):$($disk.DiskSize)"
         }
         $null = Set-PveNodesQemuConfig -Vmid $nextVmId -Node $global:proxmoxNode -ScsiN $diskHashTable
+        $disk.Lun = $i
         $i++
     }
+    $Machine.Disks | Export-Clixml -Path (Join-Path -Path $vhdVolume -ChildPath Disks.xml)
 
     # ------------------------------------------------------------------------------------------
 
@@ -675,9 +682,6 @@ restorecon -R /$($domain.Administrator.UserName)@$($Machine.DomainName)/.ssh/
 
     Write-PSFMessage "`tMachine '$Name' created"
 
-    $vhdVolume = "C:\ProgramData\AutomatedLab\Labs\$($lab.Name)\Proxmox\VHD\$($Machine.ResourceName)"
-    mkdir -Path $vhdVolume -Force | Out-Null
-
     #copy AL tools to lab machine and optionally the tools folder
     #TODO
     <#
@@ -806,10 +810,6 @@ foreach ($line in $disks)
 {
     if ($line -match $pattern)
     {
-        #$nextDriveLetter = [char[]](67..90) |
-        #Where-Object { (Get-CimInstance -Class Win32_LogicalDisk |
-        #Select-Object -ExpandProperty DeviceID) -notcontains "$($_):"} |
-        #Select-Object -First 1
         $diskNumber = $Matches.DiskNumber
         if ($Matches.State -eq 'Offline')
         {
@@ -823,19 +823,26 @@ foreach ($line in $disks)
         }
     }
 }
-foreach ($volume in (Get-WmiObject -Class Win32_Volume))
+
+$diskDefinitions = Import-Clixml -Path C:\Disks.xml
+Write-Verbose -Message "Disk count for $env:COMPUTERNAME`: $($diskDefinitions.Count)"
+foreach ($diskDefinition in $diskDefinitions.Where({ -not $_.SkipInitialization }))
 {
-    if ($volume.Label -notmatch '(?<Label>[-_\w\d]+)_AL_(?<DriveLetter>[A-Z])')
+    $disk = Get-Disk | Where-Object Number -eq $diskDefinition.Lun
+    $disk | Set-Disk -IsReadOnly $false
+    $disk | Set-Disk -IsOffline $false
+    $disk | Initialize-Disk -PartitionStyle GPT
+    $partition = if ($diskDefinition.DriveLetter)
     {
-        continue
+        $disk | New-Partition -UseMaximumSize -DriveLetter $diskDefinition.DriveLetter
     }
-        if ($volume.DriveLetter -ne "$($Matches.DriveLetter):")
+    else
     {
-        $volume.DriveLetter = "$($Matches.DriveLetter):"
+        $disk | New-Partition -UseMaximumSize -AssignDriveLetter
     }
-        $volume.Label = $Matches.Label
-    $volume.Put()
+    $partition | Format-Volume -Force -UseLargeFRS:$diskDefinition.UseLargeFRS -AllocationUnitSize $diskDefinition.AllocationUnitSize -NewFileSystemLabel $diskDefinition.Label
 }
+
 Stop-Transcript
 '@
     [System.IO.File]::WriteAllText("$vhdVolume\AdditionalDisksOnline.ps1", $additionalDisksOnline)
@@ -887,7 +894,6 @@ Stop-Transcript
     Write-Verbose 'done.'
 
     $files = dir -Path $vhdVolume -File
-    #$files += Get-Item -Path 'D:\Get-TopDiskActivityProcesses.ps1'
     foreach ($file in $files)
     {
         Write-PSFMessage "Copying file '$($file.Name)' to VM '$($Machine.ResourceName)'"
