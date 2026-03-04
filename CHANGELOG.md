@@ -4,11 +4,10 @@
 
 ### Added
 
-- Added 95 missing LabSources files to the WiX installer (Product.wxs)
-  - All SampleScripts (Azure, HyperV, Introduction, Scenarios, VMWare, Workshops)
-  - New VMWare directory and component for SampleScripts
+- Added missing files to the WiX installer (Product.wxs) that are not handled by PreBuild automation
   - Missing `DemoCustomRole.psd1` in CustomRoles
   - Missing `git.exe` in Tools
+  - New VMWare directory skeleton for SampleScripts (enables PreBuild to pick up VMWare scripts)
 - Add option to opt out of Storage Account creation (#1753)
   - Switch to Entra-Auth not possible, as we require storage shares, which would require using ADDS or Azure Domain Services. If SAS keys cannot be used, no storage is the current option.
 - Added The following new ValidRoleProperties: (thanks @constantinhager)

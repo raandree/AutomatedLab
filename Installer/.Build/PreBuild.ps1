@@ -157,7 +157,7 @@ $componentRefNode = $xmlContent.wix.product.Feature.Feature | Where-Object Id -e
 Save-Module -Name $ExternalDependency -Path $scratchExt -Force -Repository PSGallery
 
 # Sample Scripts insertion
-foreach ($sampleFile in (Get-ChildItem $SolutionDir\LabSources\SampleScripts -File -Filter *.ps1 -Recurse))
+foreach ($sampleFile in (Get-ChildItem $SolutionDir\LabSources\SampleScripts -File -Include *.ps1, *.md -Recurse))
 {
     $theNode = $xmlContent.Wix.Product.Directory.Directory.Where( { $_.Id -eq 'LABSOURCESVOLUME' }).Directory.Directory.Directory.Where( { $_.Name -eq $sampleFile.Directory.Name }).Component
     if (-not $theNode) 
@@ -180,6 +180,50 @@ foreach ($sampleFile in (Get-ChildItem $SolutionDir\LabSources\SampleScripts -Fi
     $null = $rootNode.Attributes.Append($sourceAttrib)
     $null = $rootNode.Attributes.Append($idAttrib)
     $null = $theNode.AppendChild($rootNode)
+}
+
+# Custom Roles insertion
+$labSourcesComponentGroup = $xmlContent.Wix.Fragment.ComponentGroup | Where-Object Id -eq 'LabSourcesComponentGroup'
+foreach ($customRoleFile in (Get-ChildItem $SolutionDir\LabSources\CustomRoles -File -Recurse))
+{
+    $relativePath = $customRoleFile.FullName.Replace("$SolutionDir\LabSources\CustomRoles\", '')
+    $sourceValue = '$(var.SolutionDir)\LabSources\CustomRoles\{0}' -f $relativePath
+
+    # Check if this file is already referenced in the installer
+    $alreadyExists = $labSourcesComponentGroup.Component.File | Where-Object Source -like "*\CustomRoles\$relativePath"
+    if ($alreadyExists)
+    {
+        continue
+    }
+
+    # Find the component whose existing files share the same directory
+    $dirName = $customRoleFile.Directory.Name
+    $matchingComponent = $labSourcesComponentGroup.Component | Where-Object {
+        $_.File | Where-Object { $_.Source -like "*\CustomRoles\$dirName\*" -or $_.Source -like "*\CustomRoles\$dirName/*" }
+    }
+
+    if (-not $matchingComponent)
+    {
+        Microsoft.PowerShell.Utility\Write-Host "No component in product.wxs for CustomRoles directory '$dirName'"
+        continue
+    }
+
+    Microsoft.PowerShell.Utility\Write-Host "Dynamically adding CustomRole file '$relativePath' to product.wxs"
+    $fileNode = $xmlContent.CreateNode([System.Xml.XmlNodeType]::Element, 'File', 'http://schemas.microsoft.com/wix/2006/wi')
+    $idAttrib = $xmlContent.CreateAttribute('Id')
+    $idAttrib.Value = 'customrole_{0}' -f ((New-Guid).Guid -replace '\W')
+    $nameAttrib = $xmlContent.CreateAttribute('Name')
+    $nameAttrib.Value = $customRoleFile.Name
+    $diskIdAttrib = $xmlContent.CreateAttribute('DiskId')
+    $diskIdAttrib.Value = 1
+    $sourceAttrib = $xmlContent.CreateAttribute('Source')
+    $sourceAttrib.Value = $sourceValue
+
+    $null = $fileNode.Attributes.Append($nameAttrib)
+    $null = $fileNode.Attributes.Append($diskIdAttrib)
+    $null = $fileNode.Attributes.Append($sourceAttrib)
+    $null = $fileNode.Attributes.Append($idAttrib)
+    $null = $matchingComponent.AppendChild($fileNode)
 }
 
 # Dependent modules insertion
