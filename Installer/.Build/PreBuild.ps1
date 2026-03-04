@@ -156,75 +156,74 @@ $componentRefNode = $xmlContent.wix.product.Feature.Feature | Where-Object Id -e
 # Save external modules to tmp
 Save-Module -Name $ExternalDependency -Path $scratchExt -Force -Repository PSGallery
 
-# Sample Scripts insertion
-foreach ($sampleFile in (Get-ChildItem $SolutionDir\LabSources\SampleScripts -File -Include *.ps1, *.md -Recurse))
+# LabSources insertion - dynamically build the entire LabSources directory tree
+Microsoft.PowerShell.Utility\Write-Host 'Dynamically adding LabSources content to product.wxs'
+$labSourcesPath = Join-Path -Path $SolutionDir -ChildPath 'LabSources'
+$labSourcesDirNode = $xmlContent.Wix.Product.Directory.Directory.Where( { $_.Id -eq 'LABSOURCESVOLUME' }).Directory
+$labSourcesComponentGroup = ($xmlContent.Wix.Fragment | ForEach-Object { $_.ComponentGroup } | Where-Object Id -eq 'LabSourcesComponentGroup')
+
+$folders, $files = (Get-ChildItem -Path $labSourcesPath -Recurse -Force).Where( { $_.PSIsContainer }, 'Split')
+$nodeHash = @{}
+$nodeHash.Add($labSourcesPath, $labSourcesDirNode)
+
+# Create directory tree under LABSOURCESDIR
+foreach ($folder in $folders)
 {
-    $theNode = $xmlContent.Wix.Product.Directory.Directory.Where( { $_.Id -eq 'LABSOURCESVOLUME' }).Directory.Directory.Directory.Where( { $_.Name -eq $sampleFile.Directory.Name }).Component
-    if (-not $theNode) 
+    $parentNode = $nodeHash[$folder.Parent.FullName]
+    if ($null -eq $parentNode)
     {
-        Microsoft.PowerShell.Utility\Write-Host "No folder in product.xml called $($sampleFile.Directory.Name)"
+        Microsoft.PowerShell.Utility\Write-Host "  Skipping folder '$($folder.FullName)' - parent not found"
         continue
     }
-    $rootNode = $xmlContent.CreateNode([System.Xml.XmlNodeType]::Element, 'File', 'http://schemas.microsoft.com/wix/2006/wi')
-    $idAttrib = $xmlContent.CreateAttribute('Id')
-    $idAttrib.Value = 'sample_{0}' -f ((New-Guid).Guid -replace '\W')
-    $nameAttrib = $xmlContent.CreateAttribute('Name')
-    $nameAttrib.Value = $sampleFile.Name
-    $diskIdAttrib = $xmlContent.CreateAttribute('DiskId')
-    $diskIdAttrib.Value = 1
-    $sourceAttrib = $xmlContent.CreateAttribute('Source')
-    $sourceAttrib.Value = '$(var.SolutionDir)LabSources\SampleScripts\{0}\{1}' -f $sampleFile.Directory.Name, $sampleFile.Name
 
-    $null = $rootNode.Attributes.Append($nameAttrib)
-    $null = $rootNode.Attributes.Append($diskIdAttrib)
-    $null = $rootNode.Attributes.Append($sourceAttrib)
-    $null = $rootNode.Attributes.Append($idAttrib)
-    $null = $theNode.AppendChild($rootNode)
+    $dirNode = $xmlContent.CreateNode([System.Xml.XmlNodeType]::Element, 'Directory', 'http://schemas.microsoft.com/wix/2006/wi')
+    $idAttrib = $xmlContent.CreateAttribute('Id')
+    $idAttrib.Value = 'ls_dir_{0}' -f ($folder.FullName.Replace($labSourcesPath, '') -replace '\W')
+    $nameAttrib = $xmlContent.CreateAttribute('Name')
+    $nameAttrib.Value = $folder.Name
+    $null = $dirNode.Attributes.Append($idAttrib)
+    $null = $dirNode.Attributes.Append($nameAttrib)
+    $null = $parentNode.AppendChild($dirNode)
+    $nodeHash.Add($folder.FullName, $dirNode)
 }
 
-# Custom Roles insertion
-$labSourcesComponentGroup = $xmlContent.Wix.Fragment.ComponentGroup | Where-Object Id -eq 'LabSourcesComponentGroup'
-foreach ($customRoleFile in (Get-ChildItem $SolutionDir\LabSources\CustomRoles -File -Recurse))
+# Create components and files, one component per directory that contains files
+$componentHash = @{}
+foreach ($file in $files)
 {
-    $relativePath = $customRoleFile.FullName.Replace("$SolutionDir\LabSources\CustomRoles\", '')
-    $sourceValue = '$(var.SolutionDir)\LabSources\CustomRoles\{0}' -f $relativePath
+    $dirPath = $file.DirectoryName
+    $dirKey = $dirPath.Replace($labSourcesPath, '') -replace '\W'
+    if (-not $dirKey) { $dirKey = 'Root' }
 
-    # Check if this file is already referenced in the installer
-    $alreadyExists = $labSourcesComponentGroup.Component.File | Where-Object Source -like "*\CustomRoles\$relativePath"
-    if ($alreadyExists)
+    $relativePath = $file.FullName.Replace("$SolutionDir\", '')
+
+    if (-not $componentHash.ContainsKey($dirKey))
     {
-        continue
+        $compNode = $xmlContent.CreateNode([System.Xml.XmlNodeType]::Element, 'Component', 'http://schemas.microsoft.com/wix/2006/wi')
+        $compIdAttrib = $xmlContent.CreateAttribute('Id')
+        $compIdAttrib.Value = "ls_cmp_$dirKey"
+        $compGuidAttrib = $xmlContent.CreateAttribute('Guid')
+        $compGuidAttrib.Value = (New-Guid).Guid
+        $compDirAttrib = $xmlContent.CreateAttribute('Directory')
+        $compDirAttrib.Value = if ($dirKey -eq 'Root') { 'LABSOURCESDIR' } else { "ls_dir_$dirKey" }
+        $null = $compNode.Attributes.Append($compIdAttrib)
+        $null = $compNode.Attributes.Append($compGuidAttrib)
+        $null = $compNode.Attributes.Append($compDirAttrib)
+        $null = $labSourcesComponentGroup.AppendChild($compNode)
+        $componentHash.Add($dirKey, $compNode)
     }
 
-    # Find the component whose existing files share the same directory
-    $dirName = $customRoleFile.Directory.Name
-    $matchingComponent = $labSourcesComponentGroup.Component | Where-Object {
-        $_.File | Where-Object { $_.Source -like "*\CustomRoles\$dirName\*" -or $_.Source -like "*\CustomRoles\$dirName/*" }
-    }
-
-    if (-not $matchingComponent)
-    {
-        Microsoft.PowerShell.Utility\Write-Host "No component in product.wxs for CustomRoles directory '$dirName'"
-        continue
-    }
-
-    Microsoft.PowerShell.Utility\Write-Host "Dynamically adding CustomRole file '$relativePath' to product.wxs"
     $fileNode = $xmlContent.CreateNode([System.Xml.XmlNodeType]::Element, 'File', 'http://schemas.microsoft.com/wix/2006/wi')
-    $idAttrib = $xmlContent.CreateAttribute('Id')
-    $idAttrib.Value = 'customrole_{0}' -f ((New-Guid).Guid -replace '\W')
-    $nameAttrib = $xmlContent.CreateAttribute('Name')
-    $nameAttrib.Value = $customRoleFile.Name
-    $diskIdAttrib = $xmlContent.CreateAttribute('DiskId')
-    $diskIdAttrib.Value = 1
-    $sourceAttrib = $xmlContent.CreateAttribute('Source')
-    $sourceAttrib.Value = $sourceValue
-
-    $null = $fileNode.Attributes.Append($nameAttrib)
-    $null = $fileNode.Attributes.Append($diskIdAttrib)
-    $null = $fileNode.Attributes.Append($sourceAttrib)
-    $null = $fileNode.Attributes.Append($idAttrib)
-    $null = $matchingComponent.AppendChild($fileNode)
+    $fileSourceAttrib = $xmlContent.CreateAttribute('Source')
+    $fileSourceAttrib.Value = $file.FullName
+    $fileIdAttrib = $xmlContent.CreateAttribute('Id')
+    $fileIdAttrib.Value = 'ls_{0}' -f ((New-Guid).Guid -replace '\W')
+    $null = $fileNode.Attributes.Append($fileSourceAttrib)
+    $null = $fileNode.Attributes.Append($fileIdAttrib)
+    $null = $componentHash[$dirKey].AppendChild($fileNode)
 }
+
+Microsoft.PowerShell.Utility\Write-Host "  Added $($folders.Count) directories and $($files.Count) files to LabSources"
 
 # Dependent modules insertion
 foreach ($depp in $internalModules)
