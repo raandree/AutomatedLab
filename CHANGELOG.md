@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix `Remove-Lab` not cleaning up network XML files when the virtual network name differs from the lab name (e.g. `Network_Win11LabNet.xml` left behind)
+  - Changed `Remove-Lab` to remove all `Network_*.xml` files in the lab path instead of only `Network_$labName.xml`
+  - Moved network XML cleanup in `Remove-LWNetworkSwitch` out of the `catch` block so it runs on successful switch removal too
+
 ## [5.60.0] - 2026-03-05
 
 ### Added
